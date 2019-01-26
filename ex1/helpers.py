@@ -9,6 +9,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import json
+from tensorflow import set_random_seed
+
+def random_init(number):
+    """
+    helper to set numpy and tensorflow random seed.
+    input - seed number used for both numpy and tensorflow
+    """
+    set_random_seed(number)
 
 def plot_samples(data, title='samples', width=3,height=3):
 

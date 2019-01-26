@@ -16,7 +16,10 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 
-from helpers import performance_eval, plot_samples, training_eval, save_summary, save_json
+from helpers import performance_eval, plot_samples, training_eval, save_summary, save_json, random_init
+
+# Same random each run
+random_init(42)
 
 # Import MNIST dataset and labels from Keras
 
@@ -81,12 +84,8 @@ model.add(Dense(84, activation='tanh'))
 
 model.add(Dense(10, activation='softmax'))
 
-# define optimizer
-#optimizer = optimizers.SGD()
-optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-
 # compile model
-model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=optimizers.SGD(), metrics=['accuracy'])
 
 
 # Write the summary to file 
