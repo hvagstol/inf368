@@ -9,7 +9,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import json
+import numpy as np
 from tensorflow import set_random_seed
+from keras.models import model_from_json, load_model
 
 def random_init(number):
     """
@@ -70,6 +72,14 @@ def training_eval(results, title='classifier'):
     plt.savefig('output/'+title+'_training_loss.png', bbox_inches='tight')
     plt.savefig('output/'+title+'_training_loss.pdf', bbox_inches='tight')
 
+    mean_val_loss = '%.4f' % np.mean(results.history['val_loss'])
+    print('Mean validation loss after training ' + mean_val_loss)
+    with open('output/'+title+'val_loss.txt','w') as f:
+        f.write(mean_val_loss)
+
+    with open('output/'+title+'_history.json','w') as f:
+        json.dump(results.history, f)
+
 
 def performance_eval(title, y_fit, y_target):
     """
@@ -115,3 +125,15 @@ def save_json(model, title):
 	"""
 	with open('models/'+title+'_architecture.json', 'w') as f:
 		f.write(model.to_json())
+
+def load_json(title):
+    """
+    loads model from models/title_architecture.json
+    input: title to be used in filename
+    return: model from json file
+    """
+
+    with open('models/'+title+'_architecture.json', 'r') as f:
+        json = f.read()
+    model = model_from_json(json)
+    return model

@@ -12,11 +12,11 @@ import h5py
 from keras import optimizers
 from keras.datasets import mnist
 from keras.utils import to_categorical
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 
-from helpers import performance_eval, plot_samples, training_eval, save_summary, save_json, random_init
+from helpers import performance_eval, plot_samples, training_eval, save_summary, save_json, load_json, random_init
 
 # Same random each run
 random_init(42)
@@ -101,3 +101,14 @@ performance_eval('lenet', y_fit.argmax(axis=1), y_test.argmax(axis=1))
 
 save_json(model, 'lenet')
 model.save_weights('models/lenet_weights.h5')
+
+# Comparison of the two models, load a simple model first:
+#model_lenet = load_json('lenet')
+#model_lenet.load_weights('models/lenet_weights.h5')
+
+#model_simple = load_json('simple')
+#model_simple.load_weights('models/simple_weights.h5')
+
+# Predict and evaluate performance
+#y_fit_lenet = model_lenet.predict(X_test, batch_size=128)
+#y_fit_simple = model_simple.predict(X_test, batch_size=128)
