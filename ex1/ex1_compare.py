@@ -1,20 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jan 24 21:50:00 2019
+Created on Sun Jan 27 18:00:00 2019
 
 @author: hvagstol@gmail.com
 """
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
-import seaborn as sns
-import h5py
-
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import json
-
-
-from helpers import performance_eval, plot_samples, training_eval, save_summary, save_json, load_json, random_init
 
 with open('output/simple_history.json', 'r') as f:
 	simple_history = json.loads(f.read())
