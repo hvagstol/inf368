@@ -101,8 +101,8 @@ misclassifieds = X_test[mis_index]
 predicted_labels = y_fit.argmax(axis=1)[mis_index]
 target_labels = y_test.argmax(axis=1)[mis_index]
 print('MNIST misclassifieds - predicted labels')
-print(np.resize(predicted_labels, 9*10).reshape((9,10)))
+print(np.resize(predicted_labels, 10*10).reshape((10,10)))
 print('\nMNIST misclassifieds - target labels')
-print(np.resize(target_labels, 9*10).reshape((9,10)))
+print(np.resize(target_labels, 10*10).reshape((10,10)))
 
-plot_samples(misclassifieds.reshape(90,28,28), title='MNIST_misclassifieds', width=9, height=10)
+plot_samples(misclassifieds.reshape(np.shape(mis_index)[1],28,28), title='MNIST_misclassifieds', width=10, height=10)
