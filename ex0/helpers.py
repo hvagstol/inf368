@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jan 24 21:50:00 2019
-
-@author: hvagstol@gmail.com
-"""
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
@@ -33,13 +26,13 @@ def plot_samples(data, title='samples', width=3,height=3):
 	subplot_no = 1
 	for sample in data:
 		plt.subplots_adjust(hspace=0.8, wspace=0.8)
-		plt.subplot(3,3,subplot_no)
+		plt.subplot(width,height,subplot_no)
 		subplot_no = subplot_no +1
 		plt.suptitle(title)
 		plt.xticks([])
 		plt.yticks([])
 		plt.imshow(sample, cmap='Greys')    
-		plt.savefig('output/' + title + '.png', bbox_inches='tight')
+	plt.savefig('output/' + title + '.png', bbox_inches='tight')
 
 
 def training_eval(results, title='classifier'):
@@ -77,8 +70,6 @@ def training_eval(results, title='classifier'):
     with open('output/'+title+'val_loss.txt','w') as f:
         f.write(mean_val_loss)
 
-    with open('output/'+title+'_history.json','w') as f:
-        json.dump(results.history, f)
 
 
 def performance_eval(title, y_fit, y_target):

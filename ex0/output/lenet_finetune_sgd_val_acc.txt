@@ -1,0 +1,2 @@
+Validation accuracy
+Mean: 0.9735531171040315 Variance:0.00013553221396807818
