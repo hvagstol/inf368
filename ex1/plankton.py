@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.model_selection import train_test_split
 import keras
 from PIL import Image
@@ -10,7 +10,8 @@ from keras.preprocessing import image
 from keras.applications.resnet50 import preprocess_input, decode_predictions
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
-
+from helpers import performance_eval
+from keras import backend as K
 
 class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
@@ -68,7 +69,7 @@ class DataGenerator(keras.utils.Sequence):
             # Store sample
             #print (i, ID)
             #print(self.labels[i])
-            X[i,] = self.load_image('../../data/ZooScanSet/imgs/'+ str(ID[1]) + '/' + str(ID[0]) + '.jpg')
+            X[i,] = self.load_image('../../data/zooscannet/ZooScanSet/imgs/'+ str(ID[1]) + '/' + str(ID[0]) + '.jpg')
 
             # Store class
             y[i] = self.labels[i]
@@ -76,26 +77,21 @@ class DataGenerator(keras.utils.Sequence):
         return X, y
 
 
-taxa = np.array(pd.read_csv('../../data/ZooScanSet/taxa.csv', usecols=["objid","taxon"]))
+taxa = np.array(pd.read_csv('../../data/zooscannet/ZooScanSet/taxa.csv', usecols=["objid","taxon"]))
 
-# Create a one hot encoder and set it up with the categories from the data
-ohe = OneHotEncoder(dtype='int8',sparse=False)
 taxa_labels = np.unique(taxa[:,1])
-ohe.fit(taxa_labels.reshape(-1,1))
 
-# Create a categorical list of targets for each sample
-y = ohe.transform(taxa[:,1].reshape(-1,1))
+y = np.array(pd.get_dummies(taxa[:,1]))
 
-# Get string label from one hot encoder, might be useful later
-labels= ohe.inverse_transform(y)
-
+print(np.shape(y))
 
 # split into training and test data, ensuring stratification
 
-X_use, X_dontuse, y_use, y_dontuse = train_test_split(taxa,y, test_size=0.999, random_state=42, stratify=taxa[:,1])
-X_train, X_test, y_train, y_test = train_test_split(X_use,y_use, test_size=0.1, random_state=42, stratify=y_use[:,1])
+X_use, X_dontuse, y_use, y_dontuse = train_test_split(taxa,y, test_size=0.95, random_state=42, stratify=taxa[:,1])
+X_train, X_test, y_train, y_test = train_test_split(X_use,y_use, test_size=0.1, random_state=42)
 
-
+K.clear_session()
+print('Training on '+str(np.shape(X_train)[0]) +' samples')
 # Parameters
 params = {'dim': (224,224),
           'batch_size': 64,
@@ -108,8 +104,10 @@ base_model = ResNet50(weights='imagenet', include_top=False)
 # add a global spatial average pooling layer
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
+
 # let's add a fully-connected layer
 x = Dense(1024, activation='relu')(x)
+
 # and a logistic layer -- let's say we have 200 classes
 predictions = Dense(93, activation='softmax')(x)
 
@@ -131,5 +129,9 @@ validation_generator = DataGenerator(X_test, y_test, **params)
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
                     use_multiprocessing=True,
-                    workers=2,
-                    epochs=2)
+                    workers=6,
+                    epochs=5)
+
+y_fit = model.predict(X_test, batch_size=256)
+performace_eval('resnet',y_fit.argmax(axis=1), y_test.argmax(axis=1))
+print('done')
