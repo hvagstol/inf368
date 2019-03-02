@@ -57,13 +57,13 @@ params = {'dim': (224,224),
           'batch_size': 64,
           'n_classes': 40,
           'n_channels': 3,
-          'shuffle': False}
+          'shuffle': True}
 
 params_test = {'dim': (224,224),
           'batch_size': 64,
           'n_classes': 40,
           'n_channels': 3,
-          'shuffle': False}
+          'shuffle': True}
 
 
 base_model = ResNet50(weights='imagenet', include_top=False)
@@ -75,7 +75,7 @@ x = GlobalAveragePooling2D()(x)
 # let's add a fully-connected layer
 x = Dense(1024, activation='relu', kernel_regularizer=regularizers.l2(0.01))(x)
 x = BatchNormalization()(x)
-x = Dropout(0.5)(x)
+x = Dropout(0.25)(x)
 # and a logistic layer -- let's say we have 40 classes
 predictions = Dense(40, kernel_regularizer=regularizers.l2(0.01), activation='softmax')(x)
 
@@ -88,7 +88,8 @@ for layer in base_model.layers:
     layer.trainable = False
 
 # compile the model (should be done *after* setting layers to non-trainable)
-optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+#optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+optimizer=optimizers.SGD(momentum=0.9, nesterov=True)
 model.compile(optimizer=optimizer, loss='categorical_crossentropy',metrics=['accuracy'])
 
 training_generator = DataGenerator(X_train, y_train, le, lb, **params)
@@ -99,11 +100,11 @@ testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
                     use_multiprocessing=True,
-                    workers=6,epochs=5)
+                    workers=6,epochs=3)
 
 y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
 test_length = np.shape(y_fit)[0]
 
-performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel())[0:test_length]
+performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel()[0:test_length])
 print('done')
