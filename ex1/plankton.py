@@ -9,7 +9,7 @@ from keras.applications.resnet50 import preprocess_input, decode_predictions
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras import backend as K
-from helpers import DataGenerator
+from helpers import DataGenerator, performance_eval
 
 
 # load data
@@ -91,6 +91,9 @@ model.fit_generator(generator=training_generator,
                     use_multiprocessing=False,
                     workers=1,epochs=1)
 
-#y_fit = model.predict(X_test, batch_size=256)
-#performance_eval('resnet',y_fit.argmax(axis=1), y_test.argmax(axis=1))
+y_fit = model.predict(X_test, batch_size=256)
+
+y_test = le.transform(y_test)
+y_test = lb.transform(y_test)
+performance_eval('resnet',y_fit.argmax(axis=1), y_test.argmax(axis=1))
 print('done')
