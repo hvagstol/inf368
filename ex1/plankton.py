@@ -8,6 +8,7 @@ from keras.preprocessing import image
 from keras.applications.resnet50 import preprocess_input, decode_predictions
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
+from keras import optimizers
 from keras import backend as K
 from helpers import DataGenerator, performance_eval
 
@@ -85,13 +86,12 @@ for layer in base_model.layers:
     layer.trainable = False
 
 # compile the model (should be done *after* setting layers to non-trainable)
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+model.compile(optimizer=optimizer, loss='categorical_crossentropy',metrics=['accuracy'])
 
 training_generator = DataGenerator(X_train, y_train, le, lb, **params)
 validation_generator = DataGenerator(X_test, y_test, le, lb, **params)
 testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params_test)
-
-
 
 # train the model on the new data for a few epochs
 model.fit_generator(generator=training_generator,
@@ -101,7 +101,7 @@ model.fit_generator(generator=training_generator,
 
 y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
-test_length = y_fit.len()
+test_length = np.shape(y_fit)[0]
 
 performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel())[0:test_length]
 print('done')
