@@ -121,7 +121,7 @@ class DataGenerator(keras.utils.Sequence):
 
     'Generates data for Keras'
     def __init__(self, list_IDs, labels, lenc, lbin, batch_size=32, dim=(224,224), n_channels=3,
-                 n_classes=93, shuffle=False):
+                 n_classes=93, shuffle=False, testing=False):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
@@ -134,6 +134,7 @@ class DataGenerator(keras.utils.Sequence):
         self.lenc = lenc
         self.lbin = lbin
         self.basepath = '../../data/ZooScanSet/imgs/'
+        self.testing = testing
 
     def __len__(self):
         'Denotes the number of batches per epoch'
@@ -151,9 +152,13 @@ class DataGenerator(keras.utils.Sequence):
         # we need to pass the index somehow as well..
         
         # Generate data
-        X, y = self.__data_generation(list_IDs_temp)
-
-        return X, y
+        if (self.Testing):
+             X=self.__data_generation(list_IDs_temp)
+             return X
+        else:
+            X, y = self.__data_generation(list_IDs_temp)
+            return X, y
+        
 
     def on_epoch_end(self):
         'Updates indexes after each epoch'
@@ -185,11 +190,14 @@ class DataGenerator(keras.utils.Sequence):
             img = self.load_image(path)
             X[i,] = img
 
-            # Store class, first need to one hot encode it using the received encoders
-            named_class=self.labels.loc[ID]['taxon']
-            labeled_class=self.lenc.transform([named_class])
-            onehot_class =  self.lbin.transform([labeled_class])                        
-            y[i] = onehot_class
+            if (self.testing == False):
+                # Store class, first need to one hot encode it using the received encoders
+                named_class=self.labels.loc[ID]['taxon']
+                labeled_class=self.lenc.transform([named_class])
+                onehot_class =  self.lbin.transform([labeled_class])                        
+                y[i] = onehot_class
             
-        #print(y)
-        return X, y
+        if (self.testing):
+            return X
+        else:
+            return X, y

@@ -82,6 +82,7 @@ model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
 training_generator = DataGenerator(X_train, y_train, le, lb, **params)
 validation_generator = DataGenerator(X_test, y_test, le, lb, **params)
+testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params)
 
 
 
@@ -91,7 +92,7 @@ model.fit_generator(generator=training_generator,
                     use_multiprocessing=False,
                     workers=1,epochs=1)
 
-y_fit = model.predict(X_test, batch_size=256)
+y_fit = model.predict_generator(generator=testing_generator, batch_size=64, use_multiprocessing=True, workers=6)
 
 y_test = le.transform(y_test)
 y_test = lb.transform(y_test)
