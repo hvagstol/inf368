@@ -101,7 +101,7 @@ model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
                     use_multiprocessing=True,
                     workers=6,epochs=3)
-
+print('done training - now predicting')
 y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
 test_length = np.shape(y_fit)[0]
