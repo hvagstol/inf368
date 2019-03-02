@@ -13,7 +13,7 @@ from helpers import DataGenerator, performance_eval
 
 
 # load data
-taxa = pd.read_csv('../../data/ZooScanSet/taxa.csv', usecols=["objid","taxon"])
+taxa = pd.read_csv('../../data/zooscannet/ZooScanSet/taxa.csv', usecols=["objid","taxon"])
 
 # get the distribution
 taxa_distribution = taxa['taxon'].value_counts()

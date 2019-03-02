@@ -133,7 +133,7 @@ class DataGenerator(keras.utils.Sequence):
         self.on_epoch_end()
         self.lenc = lenc
         self.lbin = lbin
-        self.basepath = '../../data/ZooScanSet/imgs/'
+        self.basepath = '../../data/zooscannet/ZooScanSet/imgs/'
         self.testing = testing
 
     def __len__(self):
