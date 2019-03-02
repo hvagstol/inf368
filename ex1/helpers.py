@@ -152,7 +152,7 @@ class DataGenerator(keras.utils.Sequence):
         # we need to pass the index somehow as well..
         
         # Generate data
-        if (self.Testing):
+        if (self.testing):
              X=self.__data_generation(list_IDs_temp)
              return X
         else:
