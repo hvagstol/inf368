@@ -7,8 +7,9 @@ from keras.applications.resnet50 import ResNet50
 from keras.preprocessing import image
 from keras.applications.resnet50 import preprocess_input, decode_predictions
 from keras.models import Model
-from keras.layers import Dense, GlobalAveragePooling2D
+from keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
 from keras import optimizers
+from keras import regularizers
 from keras import backend as K
 from helpers import DataGenerator, performance_eval
 
@@ -72,10 +73,11 @@ x = base_model.output
 x = GlobalAveragePooling2D()(x)
 
 # let's add a fully-connected layer
-x = Dense(1024, activation='relu')(x)
-
+x = Dense(1024, activation='relu', kernel_regularizer=regularizers.l2(0.01))(x)
+x = BatchNormalization()(x)
+x = Dropout(0.5)(x)
 # and a logistic layer -- let's say we have 40 classes
-predictions = Dense(40, activation='softmax')(x)
+predictions = Dense(40, kernel_regularizer=regularizers.l2(0.01), activation='softmax')(x)
 
 # this is the model we will train
 model = Model(inputs=base_model.input, outputs=predictions)
