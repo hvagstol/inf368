@@ -96,11 +96,12 @@ testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params
 # train the model on the new data for a few epochs
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
-                    use_multiprocessing=False,
-                    workers=1,epochs=1)
+                    use_multiprocessing=True,
+                    workers=6,epochs=1)
 
 y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
+print("y-fit shape:"+np.shape(y_fit))
 y_test = le.transform(y_test)
 y_test = lb.transform(y_test)
 performance_eval('resnet',y_fit.argmax(axis=1), y_test.argmax(axis=1))
