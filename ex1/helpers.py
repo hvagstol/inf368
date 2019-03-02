@@ -148,9 +148,7 @@ class DataGenerator(keras.utils.Sequence):
         
         # Find list of IDs
         list_IDs_temp = [self.list_IDs.index[k] for k in indexes]                
-        
-        # we need to pass the index somehow as well..
-        
+                
         # Generate data
         if (self.testing):
              X=self.__data_generation(list_IDs_temp)

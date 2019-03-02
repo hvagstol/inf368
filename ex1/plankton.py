@@ -26,7 +26,7 @@ reduced = taxa.loc[taxa['taxon'].isin(top_taxa_labels.index)]
 downsampled = pd.DataFrame()
 for label in top_taxa_labels.index:
     
-    this_category = reduced.loc[reduced['taxon'] == label].sample(n=10) #using a low n for demo, running code uses 3455
+    this_category = reduced.loc[reduced['taxon'] == label].sample(n=1000) #using a low n for demo, running code uses 3455
     downsampled = pd.concat([downsampled, this_category])
    
 
@@ -73,7 +73,7 @@ x = GlobalAveragePooling2D()(x)
 # let's add a fully-connected layer
 x = Dense(1024, activation='relu')(x)
 
-# and a logistic layer -- let's say we have 200 classes
+# and a logistic layer -- let's say we have 40 classes
 predictions = Dense(40, activation='softmax')(x)
 
 # this is the model we will train
@@ -97,12 +97,11 @@ testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
                     use_multiprocessing=True,
-                    workers=6,epochs=1)
+                    workers=6,epochs=5)
 
 y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
-print("y-fit shape:"+np.shape(y_fit))
-y_test = le.transform(y_test)
-y_test = lb.transform(y_test)
-performance_eval('resnet',y_fit.argmax(axis=1), y_test.argmax(axis=1))
+test_length = y_fit.len()
+
+performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel())[0:test_length]
 print('done')
