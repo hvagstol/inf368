@@ -73,7 +73,7 @@ lb.fit(le.transform(np.unique(downsampled['taxon'])))
 X_train, X_test, y_train, y_test = train_test_split(X,y, train_size=0.9, random_state=42, stratify=y)
 
 # split training set into training and validation data
-X_train, X_val, y_train, y_val = train_test_split(X_test,y_test,train_size=8/9, random_state=42, stratify=y)
+X_train, X_val, y_train, y_val = train_test_split(X_train,y_train,train_size=8/9, random_state=42, stratify=y)
 
 
 # make sure the memory is not clogged with previous data
@@ -123,7 +123,7 @@ model.compile(optimizer=optimizer, loss='categorical_crossentropy',metrics=['acc
 training_generator = DataGenerator(X_train, y_train, le, lb, **params)
 
 # error here, need to split the training data manually to get X_val, y_val
-validation_generator = DataGenerator(X_test, y_test, le, lb, **params)
+validation_generator = DataGenerator(X_val, y_val, le, lb, **params)
 testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params_test)
 
 # train the model on the new data for a few epochs
