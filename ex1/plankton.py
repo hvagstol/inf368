@@ -124,7 +124,6 @@ training_generator = DataGenerator(X_train, y_train, le, lb, **params)
 
 # error here, need to split the training data manually to get X_val, y_val
 validation_generator = DataGenerator(X_test, y_test, le, lb, **params)
-
 testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params_test)
 
 # train the model on the new data for a few epochs
@@ -138,4 +137,4 @@ y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing
 test_length = np.shape(y_fit)[0]
 
 performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel()[0:test_length])
-print('done')
+print('done evaluating')
