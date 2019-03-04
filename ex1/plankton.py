@@ -55,6 +55,7 @@ for i in range (np.shape(top_taxa_labels)[0]):
 
     print(label + ' - ' + str(n_pick+n_pick_again))
 downsampled.reset_index(inplace=True)
+downsampled = downsampled.drop(['index'], axis=1)
 
 X = downsampled[['objid']]
 y = downsampled[['taxon']]
@@ -73,8 +74,7 @@ lb.fit(le.transform(np.unique(downsampled['taxon'])))
 X_train, X_test, y_train, y_test = train_test_split(X,y, train_size=0.9, random_state=42, stratify=y)
 
 # split training set into training and validation data
-X_train, X_val, y_train, y_val = train_test_split(X_train,y_train,train_size=8/9, random_state=42, stratify=y)
-
+X_train, X_val, y_train, y_val = train_test_split(X_temp,y_temp,train_size=0.9, random_state=42, stratify=y_temp)
 
 # make sure the memory is not clogged with previous data
 K.clear_session()
