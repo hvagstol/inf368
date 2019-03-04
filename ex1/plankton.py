@@ -71,7 +71,7 @@ le.fit(np.unique(downsampled['taxon']))
 lb.fit(le.transform(np.unique(downsampled['taxon'])))
 
 # split into training and test data
-X_train, X_test, y_train, y_test = train_test_split(X,y, train_size=0.9, random_state=42, stratify=y)
+X_temp, X_test, y_temp, y_test = train_test_split(X,y, train_size=0.9, random_state=42, stratify=y)
 
 # split training set into training and validation data
 X_train, X_val, y_train, y_val = train_test_split(X_temp,y_temp,train_size=0.9, random_state=42, stratify=y_temp)
@@ -117,12 +117,10 @@ for layer in base_model.layers:
 
 # compile the model (should be done *after* setting layers to non-trainable)
 #optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-optimizer=optimizers.SGD(momentum=0.9, nesterov=True)
+optimizer=optimizers.SGD(lr = 0.1, momentum=0.9, nesterov=True)
 model.compile(optimizer=optimizer, loss='categorical_crossentropy',metrics=['accuracy'])
 
 training_generator = DataGenerator(X_train, y_train, le, lb, **params)
-
-# error here, need to split the training data manually to get X_val, y_val
 validation_generator = DataGenerator(X_val, y_val, le, lb, **params)
 testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params_test)
 
@@ -132,6 +130,8 @@ model.fit_generator(generator=training_generator,
                     use_multiprocessing=True,
                     workers=6,epochs=3)
 print('done training - now predicting')
+
+model.save_weights('resnet_weights.h5')
 y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
 test_length = np.shape(y_fit)[0]
