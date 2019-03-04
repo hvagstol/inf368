@@ -184,7 +184,7 @@ class DataGenerator(keras.utils.Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Store sample            
             path = self.basepath + str(self.labels.loc[ID]['taxon']) + '/' + str(self.list_IDs.loc[ID]['objid']) + '.jpg'
-            print(path)
+            #print(path)
             img = self.load_image(path)
             X[i,] = img
 

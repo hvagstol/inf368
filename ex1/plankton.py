@@ -115,6 +115,9 @@ model = Model(inputs=base_model.input, outputs=predictions)
 for layer in base_model.layers:
     layer.trainable = False
 
+for layer in base_model.layers[-4:-1]:
+    layer.trainable = True
+
 # compile the model (should be done *after* setting layers to non-trainable)
 #optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 optimizer=optimizers.SGD(lr = 0.1, momentum=0.9, nesterov=True)
@@ -127,8 +130,8 @@ testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params
 # train the model on the new data for a few epochs
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
-                    use_multiprocessing=True,
-                    workers=6,epochs=3)
+                    use_multiprocessing=False,
+                    workers=1,epochs=3)
 print('done training - now predicting')
 
 model.save_weights('resnet_weights.h5')
