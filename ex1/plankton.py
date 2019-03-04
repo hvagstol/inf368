@@ -24,13 +24,34 @@ taxa_distribution = taxa['taxon'].value_counts()
 top_taxa_labels = taxa_distribution[:40]
 reduced = taxa.loc[taxa['taxon'].isin(top_taxa_labels.index)]
 
-# downsample the data to a fully balanced set
+# downsample the data to a more balanced set
+
+median_category = (int(np.median(top_taxa_labels.values)))
+
+max_samples = median_category # no more than this from each category
+resampling = True # make all categories size max_samples
+
+print('Using ' + str(max_samples) + ' samples per category, with replacement if necessary.')
+
 downsampled = pd.DataFrame()
-for label in top_taxa_labels.index:
+#print(top_taxa_labels)
+for i in range(np.shape(top_taxa_labels)[0]):
+    label = (top_taxa_labels.index[i])
+    cat_samples = (top_taxa_labels.values[i])
+    n_pick = np.min([cat_samples, max_samples])
     
-    this_category = reduced.loc[reduced['taxon'] == label].sample(n=1000) #using a low n for demo, running code uses 3455
+    # add all we need from the actual samples
+    this_category = reduced.loc[reduced['taxon'] == label].sample(n=n_pick) #using a low n for demo, running code uses 3455        
     downsampled = pd.concat([downsampled, this_category])
-   
+
+    # what if we need more? can we use resampling?
+    n_pick_again = np.max([max_samples - cat_samples,0])
+
+    if (resampling and n_pick_again > 0):
+        this_category = reduced.loc[reduced['taxon'] == label].sample(n=n_pick_again, replace=True)
+        downsampled = pd.concat([downsampled, this_category])
+        
+    #print(label + ' - ' + str(n_pick+n_pick_again))
 
 X = downsampled[['objid']]
 y = downsampled[['taxon']]
