@@ -35,23 +35,26 @@ print('Using ' + str(max_samples) + ' samples per category, with replacement if 
 
 downsampled = pd.DataFrame()
 #print(top_taxa_labels)
-for i in range(np.shape(top_taxa_labels)[0]):
+for i in range (np.shape(top_taxa_labels)[0]):
+
     label = (top_taxa_labels.index[i])
     cat_samples = (top_taxa_labels.values[i])
     n_pick = np.min([cat_samples, max_samples])
-    
+
     # add all we need from the actual samples
     this_category = reduced.loc[reduced['taxon'] == label].sample(n=n_pick) #using a low n for demo, running code uses 3455        
-    downsampled = pd.concat([downsampled, this_category])
+    downsampled = pd.concat([downsampled, this_category], ignore_index=True)
+
 
     # what if we need more? can we use resampling?
     n_pick_again = np.max([max_samples - cat_samples,0])
 
     if (resampling and n_pick_again > 0):
         this_category = reduced.loc[reduced['taxon'] == label].sample(n=n_pick_again, replace=True)
-        downsampled = pd.concat([downsampled, this_category])
-        
-    #print(label + ' - ' + str(n_pick+n_pick_again))
+        downsampled = pd.concat([downsampled, this_category], ignore_index=True)
+
+    print(label + ' - ' + str(n_pick+n_pick_again))
+downsampled.reset_index(inplace=True)
 
 X = downsampled[['objid']]
 y = downsampled[['taxon']]
