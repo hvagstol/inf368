@@ -175,6 +175,7 @@ class DataGenerator(keras.utils.Sequence):
         
         Input: img, image to resize           
         """
+
         img = Image.open( infilename )
         img.load()
         
@@ -185,7 +186,9 @@ class DataGenerator(keras.utils.Sequence):
 
         new_size = tuple([int(x*ratio) for x in original_shape])
 
-        img = img.resize(new_size, Image.BICUBIC)
+    
+        if ((new_size[0] > 0) and new_size[1] > 0):
+            img = img.resize(new_size, Image.BICUBIC)
         delta_w = target_size - new_size[0]
         delta_h = target_size - new_size[1]
         padding = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
