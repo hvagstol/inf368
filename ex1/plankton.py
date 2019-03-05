@@ -57,8 +57,10 @@ for i in range (np.shape(top_taxa_labels)[0]):
 downsampled.reset_index(inplace=True)
 downsampled = downsampled.drop(['index'], axis=1)
 
-X = downsampled[['objid']]
-y = downsampled[['taxon']]
+#X = downsampled[['objid']]
+#y = downsampled[['taxon']]
+X = reduced[['objid']]
+y = reduced[['taxon']]
 
 # use scikit-learn to prepare encoders to convert labels from
 # string to onehot. we will later pass these to the data generator
@@ -67,8 +69,8 @@ y = downsampled[['taxon']]
 le = preprocessing.LabelEncoder()
 lb = preprocessing.LabelBinarizer()
 
-le.fit(np.unique(downsampled['taxon']))
-lb.fit(le.transform(np.unique(downsampled['taxon'])))
+le.fit(np.unique(y))
+lb.fit(le.transform(np.unique(y)))
 
 # split into training and test data
 X_temp, X_test, y_temp, y_test = train_test_split(X,y, train_size=0.9, random_state=42, stratify=y)
@@ -82,13 +84,13 @@ K.clear_session()
 print('Training on '+str(np.shape(X_train)[0]) +' samples')
 # Parameters
 params = {'dim': (224,224),
-          'batch_size': 64,
+          'batch_size': 256,
           'n_classes': 40,
           'n_channels': 3,
           'shuffle': True}
 
 params_test = {'dim': (224,224),
-          'batch_size': 64,
+          'batch_size': 256,
           'n_classes': 40,
           'n_channels': 3,
           'shuffle': True}
@@ -101,9 +103,9 @@ x = base_model.output
 x = GlobalAveragePooling2D()(x)
 
 # let's add a fully-connected layer
-x = Dense(1024, activation='relu', kernel_regularizer=regularizers.l2(0.01))(x)
+x = Dense(256, activation='relu', kernel_regularizer=regularizers.l2(0.01))(x)
 x = BatchNormalization()(x)
-x = Dropout(0.25)(x)
+x = Dropout(0.5)(x)
 # and a logistic layer -- let's say we have 40 classes
 predictions = Dense(40, kernel_regularizer=regularizers.l2(0.01), activation='softmax')(x)
 
