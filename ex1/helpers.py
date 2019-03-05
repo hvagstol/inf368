@@ -195,11 +195,12 @@ class DataGenerator(keras.utils.Sequence):
             delta_h = target_size - new_size[1]
             padding = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
             img_new = ImageOps.expand(img, padding, fill='white')
+            data = np.asarray(img_new.convert('RGB'), dtype='int32')
         else:
             # if the proportions are very different the above fails, then we just resize.
             img = img.resize([target_size, target_size])    
-
-        data = np.asarray(img_new.convert('RGB'), dtype='int32')
+            data = np.asarray(img.convert('RGB'), dtype='int32')
+        
 
         return data
             
