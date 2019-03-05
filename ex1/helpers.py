@@ -173,7 +173,7 @@ class DataGenerator(keras.utils.Sequence):
         to specified size, smallest dimension is resized proportionally and then padded to
         achieve correct size.
         
-        Input: img, image to resize           
+        Input: infilename, image to resize           
         """
 
         img = Image.open( infilename )
@@ -189,19 +189,21 @@ class DataGenerator(keras.utils.Sequence):
     
 
                 
-        if (new_size[0] > 0 and new_size[1] > 0 and new_size[0] < target_size and new_size[1] < target_size):
+        if (new_size[0] > 0 and new_size[1] > 0 and new_size[0] < (target_size+1) and new_size[1] < (target_size+1)):
             img = img.resize(new_size, Image.BICUBIC)
             delta_w = target_size - new_size[0]
             delta_h = target_size - new_size[1]
             padding = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
             img_new = ImageOps.expand(img, padding, fill='white')
             data = np.asarray(img_new.convert('RGB'), dtype='int32')
+            img_new.close()
         else:
             # if the proportions are very different the above fails, then we just resize.
             img = img.resize([target_size, target_size])    
             data = np.asarray(img.convert('RGB'), dtype='int32')
         
-
+        img.close()
+        
         return data
             
     def __data_generation(self, list_IDs_temp):
