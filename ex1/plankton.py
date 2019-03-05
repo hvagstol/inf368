@@ -58,10 +58,10 @@ for i in range (np.shape(top_taxa_labels)[0]):
 downsampled.reset_index(inplace=True)
 downsampled = downsampled.drop(['index'], axis=1)
 
-#X = downsampled[['objid']]
-#y = downsampled[['taxon']]
-X = reduced[['objid']]
-y = reduced[['taxon']]
+X = downsampled[['objid']]
+y = downsampled[['taxon']]
+#X = reduced[['objid']]
+#y = reduced[['taxon']]
 
 # use scikit-learn to prepare encoders to convert labels from
 # string to onehot. we will later pass these to the data generator
