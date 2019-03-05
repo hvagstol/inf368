@@ -187,8 +187,9 @@ class DataGenerator(keras.utils.Sequence):
         new_size = tuple([int(x*ratio) for x in original_shape])
 
     
-        
-        if ((new_size[0] > 0) and new_size[1] > 0):
+
+                
+        if (new_size[0] > 0 and new_size[1] > 0 and new_size[0] < target_size and new_size[1] < target_size):
             img = img.resize(new_size, Image.BICUBIC)
 
         else:
