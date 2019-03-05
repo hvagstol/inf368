@@ -11,7 +11,7 @@ from keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalizat
 from keras import optimizers
 from keras import regularizers
 from keras import backend as K
-from helpers import DataGenerator, performance_eval
+from helpers import DataGenerator, performance_eval, skf_cross_validate
 
 
 # load data
@@ -28,8 +28,8 @@ reduced = taxa.loc[taxa['taxon'].isin(top_taxa_labels.index)]
 
 median_category = (int(np.median(top_taxa_labels.values)))
 
-max_samples = median_category # no more than this from each category
-resampling = True # make all categories size max_samples
+max_samples = 1000 #median_category # no more than this from each category
+resampling = False # make all categories size max_samples
 
 print('Using ' + str(max_samples) + ' samples per category, with replacement if necessary.')
 
@@ -53,6 +53,8 @@ for i in range (np.shape(top_taxa_labels)[0]):
         this_category = reduced.loc[reduced['taxon'] == label].sample(n=n_pick_again, replace=True)
         downsampled = pd.concat([downsampled, this_category], ignore_index=True)
 
+    else:
+         n_pick_again = 0
     print(label + ' - ' + str(n_pick+n_pick_again))
 downsampled.reset_index(inplace=True)
 downsampled = downsampled.drop(['index'], axis=1)
@@ -73,7 +75,7 @@ le.fit(np.unique(y))
 lb.fit(le.transform(np.unique(y)))
 
 # split into training and test data
-X_temp, X_test, y_temp, y_test = train_test_split(X,y, train_size=0.9, random_state=42, stratify=y)
+X_temp, X_test, y_temp, y_test = train_test_split(X,y, train_size=0.2, random_state=42, stratify=y)
 
 # split training set into training and validation data
 X_train, X_val, y_train, y_val = train_test_split(X_temp,y_temp,train_size=0.9, random_state=42, stratify=y_temp)
@@ -84,13 +86,13 @@ K.clear_session()
 print('Training on '+str(np.shape(X_train)[0]) +' samples')
 # Parameters
 params = {'dim': (224,224),
-          'batch_size': 256,
+          'batch_size': 128,
           'n_classes': 40,
           'n_channels': 3,
           'shuffle': True}
 
 params_test = {'dim': (224,224),
-          'batch_size': 256,
+          'batch_size': 128,
           'n_classes': 40,
           'n_channels': 3,
           'shuffle': True}
@@ -129,17 +131,24 @@ training_generator = DataGenerator(X_train, y_train, le, lb, **params)
 validation_generator = DataGenerator(X_val, y_val, le, lb, **params)
 testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params_test)
 
-# train the model on the new data for a few epochs
-model.fit_generator(generator=training_generator,
-                    validation_data=validation_generator,
-                    use_multiprocessing=False,
-                    workers=1,epochs=3)
-print('done training - now predicting')
+crossvalidate = False
+if (crossvalidate):
+    #    y_train = lb.transform(le.transform(y_train))
+    #   y_test = lb.transform(le.transform(y_train))
+    #   skf_cross_validate(model, X, y, le, lb)
 
-model.save_weights('resnet_weights.h5')
-y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
+else:
+    # train the model on the new data for a few epochs
+    model.fit_generator(generator=training_generator,
+                        validation_data=validation_generator,
+                        use_multiprocessing=True,
+                        workers=4,epochs=3)
+    print('done training - now predicting')
 
-test_length = np.shape(y_fit)[0]
+    model.save_weights('resnet_weights.h5')
+    y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
-performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel()[0:test_length])
+    test_length = np.shape(y_fit)[0]
+
+    performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel()[0:test_length])
 print('done evaluating')
