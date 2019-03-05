@@ -11,8 +11,7 @@ from keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalizat
 from keras import optimizers
 from keras import regularizers
 from keras import backend as K
-from helpers import DataGenerator, performance_eval, skf_cross_validate
-
+from helpers import DataGenerator, performance_eval
 
 # load data
 taxa = pd.read_csv('../../data/zooscannet/ZooScanSet/taxa.csv', usecols=["objid","taxon"])
@@ -75,10 +74,10 @@ le.fit(np.unique(y))
 lb.fit(le.transform(np.unique(y)))
 
 # split into training and test data
-X_temp, X_test, y_temp, y_test = train_test_split(X,y, train_size=0.2, random_state=42, stratify=y)
+X_temp, X_test, y_temp, y_test = train_test_split(X,y, train_size=0.9, random_state=42, stratify=y)
 
 # split training set into training and validation data
-X_train, X_val, y_train, y_val = train_test_split(X_temp,y_temp,train_size=0.9, random_state=42, stratify=y_temp)
+X_train, X_val, y_train, y_val = train_test_split(X_temp,y_temp,train_size=8/9, random_state=42, stratify=y_temp)
 
 # make sure the memory is not clogged with previous data
 K.clear_session()
@@ -131,24 +130,17 @@ training_generator = DataGenerator(X_train, y_train, le, lb, **params)
 validation_generator = DataGenerator(X_val, y_val, le, lb, **params)
 testing_generator = DataGenerator(X_test, y_test, le, lb, testing=True, **params_test)
 
-crossvalidate = False
-if (crossvalidate):
-    #    y_train = lb.transform(le.transform(y_train))
-    #   y_test = lb.transform(le.transform(y_train))
-    #   skf_cross_validate(model, X, y, le, lb)
+model.fit_generator(generator=training_generator,
+                    validation_data=validation_generator,
+                    use_multiprocessing=True,
+                    workers=4,epochs=3)
 
-else:
-    # train the model on the new data for a few epochs
-    model.fit_generator(generator=training_generator,
-                        validation_data=validation_generator,
-                        use_multiprocessing=True,
-                        workers=4,epochs=3)
-    print('done training - now predicting')
+print('done training - now predicting')
 
-    model.save_weights('resnet_weights.h5')
-    y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
+model.save_weights('resnet_weights.h5')
+y_fit = model.predict_generator(generator=testing_generator, use_multiprocessing=True, workers=6)
 
-    test_length = np.shape(y_fit)[0]
+test_length = np.shape(y_fit)[0]
 
-    performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel()[0:test_length])
+performance_eval('resnet', le.inverse_transform(y_fit.argmax(axis=1)),np.array(y_test.values).ravel()[0:test_length])
 print('done evaluating')

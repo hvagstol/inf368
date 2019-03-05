@@ -110,39 +110,7 @@ def load_json(title):
         json = f.read()
     model = model_from_json(json)
     return model
-
-def skf_cross_validate(model, X, y , le, lb):
-	"""
-	wrapper function to do sklearn style stratified k fold cross validation
-	on a keras model. Some code borrowed from:
-	https://medium.com/@literallywords/stratified-k-fold-with-keras-e57c487b1416
-
-	input - X, training data
-			y, training data labels
-	        
-	"""
-	print("Stratified K Fold cross Validating")
-	skf = StratifiedKFold(n_splits=5, random_state=42, shuffle=True)
-	for index, (train_index, test_index) in enumerate(skf.split(X, y)):
-
-		print("TRAIN:", train_index, "TEST:", test_index)
-		X_train, X_test = X[train_index], X[test_index]
-		y_train, y_test = y[train_index], y[test_index]
-
-		# Convert class labels to categorical data/one-hot encoding
-		#y_test = keras.utils.to_categorical(y_test)
-		#y_train = keras.utils.to_categorical(y_train)
-
-        training_generator = DataGenerator(X_train, y_train, le, lb, **params)
-        validation_generator = DataGenerator(X_test, y_test, le, lb, **params)
-        print ('Training '+'resnet-cv-'+str(index))
-		# Train model and validate
-        results = model.fit_generator(X_train, y_train, validation_data=(X_test, y_test), epochs=3, batch_size=64)
-        training_eval(results, 'resnet-cv-'+str(index))
-        save_json(model, 'resnet-cv-'+str(index))
-        model.save_weights('resnet-cv-'+str(index)+'_weights.h5')
-		    
-
+	    
 class DataGenerator(keras.utils.Sequence):
     """
     Data generator for image data, based on:
