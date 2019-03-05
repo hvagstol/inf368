@@ -191,15 +191,13 @@ class DataGenerator(keras.utils.Sequence):
                 
         if (new_size[0] > 0 and new_size[1] > 0 and new_size[0] < target_size and new_size[1] < target_size):
             img = img.resize(new_size, Image.BICUBIC)
-
+            delta_w = target_size - new_size[0]
+            delta_h = target_size - new_size[1]
+            padding = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
+            img_new = ImageOps.expand(img, padding, fill='white')
         else:
             # if the proportions are very different the above fails, then we just resize.
-            img = img.resize([target_size, target_size])
-
-        delta_w = target_size - new_size[0]
-        delta_h = target_size - new_size[1]
-        padding = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
-        img_new = ImageOps.expand(img, padding, fill='white')
+            img = img.resize([target_size, target_size])    
 
         data = np.asarray(img_new.convert('RGB'), dtype='int32')
 
