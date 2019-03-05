@@ -1,6 +1,6 @@
 import numpy as np
 import keras
-from PIL import Image
+from PIL import Image, ImageOps
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -163,13 +163,36 @@ class DataGenerator(keras.utils.Sequence):
         self.indexes = np.arange(len(self.list_IDs))
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
-
+    
     def load_image(self, infilename ) :
+        """
+        Code courtsey of jdhao, LastMod 2019-01-08, License CC BY-NC-ND 4.0
+        https://jdhao.github.io/2017/11/06/resize-image-to-square-with-padding/
+        
+        Resizes input image to a padded square of given size. Biggest dimension is resized
+        to specified size, smallest dimension is resized proportionally and then padded to
+        achieve correct size.
+        
+        Input: img, image to resize           
+        """
         img = Image.open( infilename )
         img.load()
-        #not good resizing, prbly
-        img = img.resize((224,224), Image.BICUBIC)        
-        data = np.asarray( img, dtype="int32").reshape(224,224,1)
+        
+        target_size = 224
+
+        original_shape = np.shape(img)[:2]    
+        ratio = target_size/max(original_shape)
+
+        new_size = tuple([int(x*ratio) for x in original_shape])
+
+        img = img.resize(new_size, Image.BICUBIC)
+        delta_w = target_size - new_size[0]
+        delta_h = target_size - new_size[1]
+        padding = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
+        img_new = ImageOps.expand(img, padding, fill='white')
+
+        data = np.asarray(img_new.convert('RGB'), dtype='int32')
+
         return data
             
     def __data_generation(self, list_IDs_temp):
