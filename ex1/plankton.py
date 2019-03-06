@@ -122,7 +122,6 @@ for layer in base_model.layers[-4:-1]:
     layer.trainable = True
 
 # compile the model (should be done *after* setting layers to non-trainable)
-#optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 optimizer=optimizers.SGD(lr = 0.1, momentum=0.9, nesterov=True)
 model.compile(optimizer=optimizer, loss='categorical_crossentropy',metrics=['accuracy'])
 
