@@ -1,0 +1,36 @@
+Benthosema
+Benthosema glaciale
+Max length 10.3 SL, common length NA
+
+Herring
+Clupea Harengus
+Max length 44 cm SL, common length 30 cm
+
+Blue Whiting
+Micromesistius poutassou
+Max length 55.5cm TL, common length 22 cm
+
+Mackerel
+Scomber Scombrus
+Max length 60.0cm FL, common length 30cm
+
+Source for length data: http://www.fishbase.org
+
+
+Sensor size: 8.473 mm x 7.086 mm
+Focal length: 5mm
+Angle of view: Horizontal 80.5, Vertical 70,6
+
+Minimum distance: 200mm
+FoV: 339 x 283 mm
+
+Maximum distance: 700mm
+FoV: 1190 x 992 mm
+
+Sources:
+Camera data sheet: IDS U-Eye 3280CP
+Lens data sheet: Schneider Kreuznach Cinegon 1.8/4.8-0902
+Distances: Scantrol Deep Vision
+
+AoV and FoV calculations:
+https://www.pointsinfocus.com/tools/depth-of-field-and-equivalent-lens-calculator/
