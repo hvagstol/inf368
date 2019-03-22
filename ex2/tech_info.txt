@@ -1,0 +1,17 @@
+Sensor size: 8.473 mm x 7.086 mm
+Focal length: 5mm
+Angle of view: Horizontal 80.5, Vertical 70,6
+
+Minimum distance: 200mm
+FoV: 339 x 283 mm
+
+Maximum distance: 700mm
+FoV: 1190 x 992 mm
+
+Sources:
+Camera data sheet: IDS U-Eye 3280CP
+Lens data sheet: Schneider Kreuznach Cinegon 1.8/4.8-0902
+Distances: Scantrol Deep Vision (K. Løvall)
+
+AoV and FoV calculations:
+https://www.pointsinfocus.com/tools/depth-of-field-and-equivalent-lens-calculator/

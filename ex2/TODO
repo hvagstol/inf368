@@ -2,23 +2,31 @@ x Rotate cutouts so that scaling is applied correctly
     x Moment function to calculate principal axis
     x Rotate principal axis to horizontal
 	x Crop to bounding box
-	
 
+x Ignore original image size
+
+x Scale according to FoV
+
+X Randomize distance to camera
+
+x Randomize size
+
+x Apply random rotation to object
+
+x Limit scaling by species max size or common size
+    
+	x Use species common size and normal distribution
+
+x Apply objects in far-to-near order
+
+x Randomize direction (mirror)
+	
 - Store species data in settings file and load/parse by species name
 
 - Store camera/setup data in settings file and use for scaling
 
-- Limit scaling by species max size or common size
-    - Use species common size and normal distribution
-
- - Randomize distance to camera and scale according to FoV
-
- - Ignore original image size
-
- - Apply random rotation to object
+- Generate mask output file compatible with R-CNN 
 
  - Check if object is outside vertical edges (horizontal is okay)
 
- - Randomize distance from camera and apply objects in far-to-near order
-
- - Randomize direction (mirror)
+ 
