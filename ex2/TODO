@@ -1,4 +1,6 @@
-- Generate mask output files compatible with R-CNN 
+- Rescale images for faster training and compability
+
+- Make a better split between training and validation than current
 
 - Load class and class ids from text file
 	
@@ -8,6 +10,8 @@
 
 
 ---------------------------------------------------------------------------
+x Generate mask output files compatible with R-CNN 
+
 x Check if object is outside vertical edges (horizontal is okay)
 
 x Handle occlusions in mask generation
