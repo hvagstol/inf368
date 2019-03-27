@@ -156,9 +156,9 @@ def scale_obj(obj, mean_size=60, max_size=103,  size_real=0, distance=0):
     if (size_real == 0):
         # add some variance
         var_size = (max_size - mean_size)/3
-        print(max_size, mean_size, var_size)        
+        #print(max_size, mean_size, var_size)        
         size_real = np.random.normal(mean_size, var_size)
-        print('mean size = ' + str(mean_size) + ', var size = ' + str(var_size))
+        #print('mean size = ' + str(mean_size) + ', var size = ' + str(var_size))
     
     # in front of image, size is 1392px/339mm
     # in back of image, size is 1392px/1190mm
@@ -166,13 +166,13 @@ def scale_obj(obj, mean_size=60, max_size=103,  size_real=0, distance=0):
     pix_per_mm = (1392/(339 + (distance-200)*((1190-339)/(max_distance-200))))   
     new_length = (int)(pix_per_mm*size_real)    
     ratio = new_length/(int)(np.shape(obj)[1])
-    print('distance ' +str(distance))
+    #print('distance ' +str(distance))
     
-    print('pix per mm ', str(pix_per_mm))
-    print('ratio ' + str(ratio))
-    print('new length ' + str(new_length) + 'px, ' + str(size_real) + ' mm')    
+    #print('pix per mm ', str(pix_per_mm))
+    #print('ratio ' + str(ratio))
+    #print('new length ' + str(new_length) + 'px, ' + str(size_real) + ' mm')    
     new_height = (int)(np.shape(obj)[0]*ratio)
-    print('new height ' + str(new_height))
+    #print('new height ' + str(new_height))
     
     # ensure nothing is resized to 0
     if (new_length < 1):
@@ -195,10 +195,10 @@ def flip_obj(obj, p_hflip=0.3, p_vflip=0.1):
     
     if (hflip < p_hflip ):
         obj = obj.transpose(Image.FLIP_LEFT_RIGHT)
-        print('flipping horizontally ' + str(hflip))
+        #print('flipping horizontally ' + str(hflip))
     if (vflip < p_vflip ):
         obj = obj.transpose(Image.FLIP_TOP_BOTTOM)
-        print('flipping vertically' + str(vflip))
+        #print('flipping vertically' + str(vflip))
     return obj
 
 def get_mask(obj):
@@ -220,6 +220,7 @@ def mkimage(filename, objs, names, bgs, species, maxobjs, output_dir="images_out
     n_obj = random.randint(1,maxobjs)
     img_list = []
     for c in range(0, n_obj):
+        
         if single: cls=cls0
         else: cls = random.randint(0,len(objs)-1)
         obj = random.choice(objs[cls])        
@@ -245,7 +246,7 @@ def mkimage(filename, objs, names, bgs, species, maxobjs, output_dir="images_out
         sizex,sizey = obj.size
         #print(obj.size)
         if(sizey > sizex):
-            print('taller than wide, rotating')
+            #print('taller than wide, rotating')
             obj = obj.rotate(-90,expand=True)
             
         # get size limitations from species dictionary
@@ -265,14 +266,9 @@ def mkimage(filename, objs, names, bgs, species, maxobjs, output_dir="images_out
         
         posx = random.randint(-floor(sizex/2),imx-floor(sizex/2))
         
-        #posy = random.randint(-floor(sizey/2),imy-floor(sizey/2))
-                
-        if ((imy-sizey+bottom_gap) < -top_gap):
-            print('too beaucoup, skipping')            
-            continue
-          
+        posy = random.randint(-floor(sizey/2),imy-floor(sizey/2))                          
             
-        posy = random.randint(-top_gap,imy-sizey+bottom_gap)
+        #posy = random.randint(-top_gap,imy-sizey+bottom_gap)
         #im.paste(obj,(posx,posy),obj) # need to do this in the right order.
         mask = get_mask(obj)
         img_list.append([obj, (posx,posy), distance, cls, mask,(sizex,sizey)])
@@ -312,9 +308,9 @@ def mkimage(filename, objs, names, bgs, species, maxobjs, output_dir="images_out
             #display(higher_mask.resize(((int)(higher_mask.size[0]/4), (int)(higher_mask.size[1]/4)))) 
     
         # the one we'll save for this object, with occluded areas removed
-        mask_im = mask_im.resize((256,256))
+        mask_im = mask_im.resize((512,512))
         mask_im.save(os.path.join(mask_dir, filename+'-'+str(idx)+'.png'))
-    im = im.resize((256,256))
+    im = im.resize((512,512))
     im.save(os.path.join(output_dir,filename+'.png'))
     with open(os.path.join(mask_dir,filename+'.csv'),'w') as f:
         for l in log: f.write(l)
