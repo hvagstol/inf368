@@ -41,5 +41,6 @@ else: e=int(args.e)
 
 print(args.o, args.m)
 for i in range(1,int(n)+1):
+    print('n = ' + str(int(n)) + ' current = ' + str(i), end='\r' )
     mkimage('test_%d' % int(i), objects, names, backgrounds, species, maxobjs=e, output_dir=args.o, mask_dir=args.m,  single=args.single)
     
