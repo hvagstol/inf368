@@ -100,7 +100,7 @@ def orientation(moments, out_type='deg'):
 def initialize(backgrounds_dir, classes_dir, species_list):
     # Loading data
     backgrounds = os.listdir(backgrounds_dir)
-    class_names = os.listdir(classes_dir)
+    class_names = sorted(os.listdir(classes_dir))
     species = species_list
     class_objects = [os.listdir(os.path.join(classes_dir,c)) for c in class_names]
 
