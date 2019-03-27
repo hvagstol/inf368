@@ -212,11 +212,6 @@ def get_mask(obj):
 
 # Simulate an image
 def mkimage(filename, objs, names, bgs, species, maxobjs, output_dir="images_out", mask_dir="mask_out", single=False):
-    if (type(output_dir) == None):
-         output_dir = 'images_out'
-    if (type(mask_dir) == None):
-         mask_dir = 'mask_out'
-    
 
     log = []
     im = bgs[random.randint(0,len(bgs)-1)].copy()
@@ -317,9 +312,9 @@ def mkimage(filename, objs, names, bgs, species, maxobjs, output_dir="images_out
             #display(higher_mask.resize(((int)(higher_mask.size[0]/4), (int)(higher_mask.size[1]/4)))) 
     
         # the one we'll save for this object, with occluded areas removed
-        mask_im = mask_im.resize((128,128))
+        mask_im = mask_im.resize((256,256))
         mask_im.save(os.path.join(mask_dir, filename+'-'+str(idx)+'.png'))
-    im = im.resize((128,128))
+    im = im.resize((256,256))
     im.save(os.path.join(output_dir,filename+'.png'))
     with open(os.path.join(mask_dir,filename+'.csv'),'w') as f:
         for l in log: f.write(l)
