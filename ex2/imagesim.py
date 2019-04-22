@@ -22,6 +22,7 @@ p.add_argument('-o'
                , help='directory to store generated images')
 p.add_argument('-m'
                , help='directory to store generated masks')
+p.add_argument('-i' , help='index of first sample')
 args = p.parse_args()
 print(args)
 
@@ -35,12 +36,13 @@ species = {
 objects, names, backgrounds = initialize(backgrounds_dir=args.backgrounds, classes_dir=args.classes, species_list=species)
 
 n = int(args.n)
-
+initial = int(args.i)
 if args.e == None: e=6
 else: e=int(args.e)
 
 print(args.o, args.m)
-for i in range(1,int(n)+1):
-    print('n = ' + str(int(n)) + ' current = ' + str(i), end='\r' )
+
+for i in range(initial,n+initial+1):
+    print('n = ' + str(int(n)) + ' current = ' + str(i), end='\r')
     mkimage('test_%d' % int(i), objects, names, backgrounds, species, maxobjs=e, output_dir=args.o, mask_dir=args.m,  single=args.single)
     
