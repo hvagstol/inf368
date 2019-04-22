@@ -151,7 +151,7 @@ def scale_obj(obj, mean_size=60, max_size=103,  size_real=0, distance=0):
         s = skewnorm.rvs(-5, size=1, loc=650,scale=120)
         s2 = (int)(np.clip(s, 200, 700))
         
-        distance = random.randint(min_distance, max_distance)
+        distance = np.random.choice(s2)
     
     if (size_real == 0):
         # add some variance
