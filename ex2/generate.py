@@ -203,16 +203,16 @@ def flip_obj(obj, p_hflip=0.3, p_vflip=0.1):
 
 def get_mask(obj):
     """
-    get boolean mask of foreground in image with black background
+    Get boolean mask of foreground in image with black background
     """
     gray = obj.convert('L')      
     image = gray.point(lambda x: 0 if x<1 else 255, '1')
     return image            
 
-
-# Simulate an image
 def mkimage(filename, objs, names, bgs, species, maxobjs, output_dir="images_out", mask_dir="mask_out", single=False):
-
+    """
+    Produce the actual image, masks and csv file to be used for training.
+    """
     log = []
     im = bgs[random.randint(0,len(bgs)-1)].copy()
     # print('bg size='+str(im.size))
